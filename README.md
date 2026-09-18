@@ -18,6 +18,8 @@ Problem → Evidence → Explain → Government pathway → Action
 - Saved community signals
 - Evidence Explainer with a verified rule-based fallback
 - Secure Supabase Edge Function for optional AI explanations
+- Authorized report-review desk with verify/reject workflow
+- Supabase Auth sign-in for account-only features
 - Source library linking to primary government sources
 - Responsive desktop/mobile UI
 - GitHub Pages deployment and JavaScript validation
@@ -45,6 +47,7 @@ Edge Functions:
 
 - congress-data
 - civic-explain
+- review-report
 
 The browser contains only the Supabase publishable key. Secret/service-role credentials are never placed in the repository.
 
@@ -70,3 +73,11 @@ Configure the secret in Supabase Edge Function Secrets Management. Never commit 
 ## Important
 
 CivicSignal is an educational civic-information tool. A measured difference is not proof of a cause, and a generated explanation does not replace the underlying primary source.
+
+## Production notes
+
+- The browser uses a Supabase publishable key only. No service-role or secret key is committed.
+- Community reports are never published directly: public submissions enter `pending`, and an authorized reviewer must mark them `verified` before they appear on the map.
+- Supabase Data API grants are explicit in `supabase/schema.sql`; private tables are not exposed to browser roles.
+- The 2024 ACS explorer uses the Census Data API. Census now requires API keys for its Data API, so a production-wide deployment should keep the Census key server-side in Supabase rather than putting it in the browser. The current app retains a South Carolina county fallback so the interface does not silently invent data.
+- GitHub Pages uses one deployment workflow: `.github/workflows/pages.yml`. JavaScript syntax is checked before deployment.
