@@ -29,8 +29,8 @@
 
     try {
       const [m,b] = await Promise.all([
-        sb.from("members").select("*").order("name"),
-        sb.from("bills").select("*").order("updated",{ascending:false})
+        sb.from("congress_members").select("*").order("name"),
+        sb.from("congress_bills").select("*").order("updated",{ascending:false})
       ]);
       if (m.error) throw m.error;
       if (b.error) throw b.error;
@@ -42,7 +42,7 @@
       state.user = user || null;
 
       if (state.user) {
-        const {data:saved,error} = await sb.from("saved_items")
+        const {data:saved,error} = await sb.from("congress_saved_items")
           .select("item_type,item_id")
           .eq("user_id",state.user.id);
         if (!error && saved) {
@@ -112,8 +112,8 @@
       state.live = true;
 
       if (sb) {
-        await sb.from("members").upsert(members,{onConflict:"id"});
-        await sb.from("bills").upsert(bills,{onConflict:"id"});
+        await sb.from("congress_members").upsert(members,{onConflict:"id"});
+        await sb.from("congress_bills").upsert(bills,{onConflict:"id"});
       }
       return true;
     } catch(e) {
@@ -130,9 +130,9 @@
     if (sb && state.user) {
       try {
         if (state.saved.includes(type+":"+id)) {
-          await sb.from("saved_items").upsert({user_id:state.user.id,item_type:type,item_id:id});
+          await sb.from("congress_saved_items").upsert({user_id:state.user.id,item_type:type,item_id:id});
         } else {
-          await sb.from("saved_items").delete().eq("user_id",state.user.id).eq("item_type",type).eq("item_id",id);
+          await sb.from("congress_saved_items").delete().eq("user_id",state.user.id).eq("item_type",type).eq("item_id",id);
         }
       } catch(e) { console.warn("Watchlist sync failed:", e); }
     }
