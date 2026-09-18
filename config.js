@@ -5,7 +5,7 @@
 */
 window.APP_CONFIG = {
   SUPABASE_URL: "https://lfpbrxsrvjizukugsvsq.supabase.co",
-  SUPABASE_ANON_KEY: "sb_publishable_kSb7Sv1RWOq8bernfgXYLw_RPwLon9r",
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_kSb7Sv1RWOq8bernfgXYLw_RPwLon9r",
   CONGRESS_API_KEY: "",
   DATA_MODE: "auto"
 };
