@@ -6,7 +6,7 @@ const A={view:"home",sf:"45",sn:"South Carolina",county:"",counties:[],data:null
     const {data:{session}}=await sb.auth.getSession();
     const token=session?.access_token;
     if(!token)return null;
-    const url=C.SUPABASE_URL.replace(/\\/$/,"")+"/functions/v1/congress-data";
+    const url=C.SUPABASE_URL.replace(/\/$/,"")+"/functions/v1/congress-data";
     const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","apikey":C.SUPABASE_ANON_KEY,"Authorization":"Bearer "+token},body:"{}"});
     if(!r.ok)return null;
     return await r.json();
