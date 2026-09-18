@@ -1,16 +1,16 @@
--- CongressionalApp Supabase schema
--- Run this in Supabase SQL Editor.
+-- CongressionalApp production Supabase schema
 create extension if not exists pgcrypto;
 
 create table if not exists public.members (
   id text primary key,
   name text not null,
-  party text not null,
+  party text,
   state text not null,
   district text,
   chamber text not null,
   role text,
   committees text,
+  official_url text,
   updated date default current_date
 );
 
@@ -21,6 +21,7 @@ create table if not exists public.bills (
   status text,
   sponsor text,
   topic text,
+  official_url text,
   updated date default current_date,
   summary text
 );
@@ -40,27 +41,19 @@ alter table public.saved_items enable row level security;
 
 drop policy if exists "members are readable" on public.members;
 create policy "members are readable" on public.members for select using (true);
-
 drop policy if exists "bills are readable" on public.bills;
 create policy "bills are readable" on public.bills for select using (true);
-
 drop policy if exists "users read own saved items" on public.saved_items;
 create policy "users read own saved items" on public.saved_items for select using (auth.uid() = user_id);
-
 drop policy if exists "users create own saved items" on public.saved_items;
 create policy "users create own saved items" on public.saved_items for insert with check (auth.uid() = user_id);
-
 drop policy if exists "users delete own saved items" on public.saved_items;
 create policy "users delete own saved items" on public.saved_items for delete using (auth.uid() = user_id);
 
--- Seed data is intentionally small and clearly suitable for demo/testing.
-insert into public.members(id,name,party,state,district,chamber,role,committees,updated) values
-('D001','Alexandra Morgan','D','SC','07','House','Representative','Energy & Commerce; Education','2026-09-16'),
-('R001','Daniel Carter','R','SC','01','House','Representative','Armed Services; Budget','2026-09-16'),
-('I001','Jordan Lee','I','SC','00','Senate','Senator','Judiciary; Finance','2026-09-16')
-on conflict (id) do nothing;
+create index if not exists members_state_idx on public.members(state);
+create index if not exists members_chamber_idx on public.members(chamber);
+create index if not exists bills_status_idx on public.bills(status);
+create index if not exists bills_topic_idx on public.bills(topic);
 
-insert into public.bills(id,title,chamber,status,sponsor,topic,updated,summary) values
-('HR-1024','Digital Access and Connectivity Act','House','Introduced','Alexandra Morgan','Technology','2026-09-15','Would expand access to broadband infrastructure and digital skills programs.'),
-('S-418','Clean Energy Research Act','Senate','Committee','Jordan Lee','Energy','2026-09-14','Would authorize federal support for clean-energy research and demonstration programs.')
-on conflict (id) do nothing;
+-- No fictional congressional records are seeded.
+-- Live records must come from an authoritative source such as Congress.gov.
