@@ -58,3 +58,16 @@ create index if not exists congress_bills_topic_idx on public.congress_bills(top
 -- No fictional congressional records are seeded.
 -- Live records must come from an authoritative source such as Congress.gov.
 \n\n-- CivicSignal saved research reports\ncreate table if not exists public.civic_saved_signals (id uuid primary key default gen_random_uuid(),user_id uuid not null references auth.users(id) on delete cascade,signal_type text not null,geography text not null,title text not null,source_url text,notes text,created_at timestamptz not null default now(),unique(user_id,signal_type,geography,title));\nalter table public.civic_saved_signals enable row level security;\ngrant select,insert,delete on public.civic_saved_signals to authenticated;\ndrop policy if exists "users read own civic signals" on public.civic_saved_signals; create policy "users read own civic signals" on public.civic_saved_signals for select to authenticated using ((select auth.uid())=user_id);\ndrop policy if exists "users create own civic signals" on public.civic_saved_signals; create policy "users create own civic signals" on public.civic_saved_signals for insert to authenticated with check ((select auth.uid())=user_id);\ndrop policy if exists "users delete own civic signals" on public.civic_saved_signals; create policy "users delete own civic signals" on public.civic_saved_signals for delete to authenticated using ((select auth.uid())=user_id);\n
+
+-- Explicit Data API grants for production. RLS remains the row-level authorization layer.
+grant select, insert on public.reports to anon, authenticated;
+grant select, update on public.reports to authenticated;
+grant select, insert on public.comments to anon, authenticated;
+grant select, insert on public.report_photos to anon, authenticated;
+grant select on public.community_priorities to anon, authenticated;
+grant select on public.congress_members to anon, authenticated;
+grant select on public.congress_bills to anon, authenticated;
+grant select, insert, delete on public.congress_saved_items to authenticated;
+grant select, insert, delete on public.civic_saved_signals to authenticated;
+revoke all on public.admin_users from anon, authenticated;
+revoke all on public.notification_queue from anon, authenticated;
