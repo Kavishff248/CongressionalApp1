@@ -1,61 +1,72 @@
-# CongressionalApp
+# CivicSignal
 
-A nonpartisan congressional research dashboard built for students, researchers, and civic education.
+> Know what is happening in your community before it becomes a problem.
 
-## Included
+CivicSignal is a nonpartisan civic-data web app built around:
 
-- Responsive desktop/mobile interface
-- Member directory with search
-- Legislation tracker
-- District finder
-- Side-by-side member comparison
-- Personal watchlist
-- Optional Supabase persistence
-- Row Level Security policies
-- Demo dataset so the interface works before live data is connected
-- GitHub Pages deployment workflow
-- Loading, empty, and responsive states
+Problem → Evidence → Explain → Government pathway → Action
 
-## Data architecture
+## Implemented
 
-The app is designed around two layers:
+- Community Explorer using the 2024 Census ACS 5-year API
+- Transparent county/state comparisons for population, poverty, unemployment, and median household income
+- Interactive OpenStreetMap/Leaflet issue map
+- Issue categories for roads, flooding, transit, schools, environment, development, facilities, and safety
+- Community issue reporting with pending-review workflow
+- Map pinning for issue reports
+- Supabase persistence with Row Level Security
+- Saved community signals
+- Evidence Explainer with a verified rule-based fallback
+- Secure Supabase Edge Function for optional AI explanations
+- Source library linking to primary government sources
+- Responsive desktop/mobile UI
+- GitHub Pages deployment and JavaScript validation
 
-1. Primary-source data — Congress.gov API can provide current congressional members, bills, actions, committees, and other legislative collections.
-2. Supabase application data — Supabase stores normalized application records and per-user watchlists.
+## Evidence model
 
-The browser must never contain a Supabase service-role key. Only a public anon key belongs in config.js, with RLS enabled.
+CivicSignal distinguishes:
+
+1. Verified evidence — data returned by primary public sources.
+2. Calculated values — rates derived from documented source variables.
+3. Generated explanations — text produced by the AI service when configured.
+4. Civic pathways — general jurisdiction guidance that users are told to verify.
+
+The app does not recommend candidates, parties, or policy positions.
+
+Community reports are inserted as pending and are only shown on the public map after an administrator marks them verified.
 
 ## Supabase
 
-Run supabase/schema.sql in the Supabase SQL Editor.
+Application tables include reports, report_photos, comments, community_priorities, notification_queue, civic_saved_signals, congress_members, congress_bills, and congress_saved_items.
 
-Then set these public browser values in config.js:
+RLS is enabled on the exposed application tables.
 
-    window.APP_CONFIG = {
-      SUPABASE_URL: "https://YOUR_PROJECT.supabase.co",
-      SUPABASE_ANON_KEY: "YOUR_PUBLIC_ANON_KEY",
-      CONGRESS_API_KEY: "",
-      DATA_MODE: "auto"
-    };
+Edge Functions:
 
-Never put a Supabase service-role key in this repository.
+- congress-data
+- civic-explain
 
-## Congress.gov live data
+The browser contains only the Supabase publishable key. Secret/service-role credentials are never placed in the repository.
 
-The Congress.gov API is the intended primary source for live federal legislative records. It requires an API key. The current UI therefore uses a clearly labeled demo fallback instead of pretending that sample records are live.
+## AI explanation
 
-For production, the Congress.gov key should be used by a server-side data layer rather than shipped to every browser.
+The civic-explain Edge Function is deployed and requires the Supabase project secret OPENAI_API_KEY. Without that secret, CivicSignal safely keeps the source-backed fallback explanation instead of pretending an AI response was generated.
+
+Configure the secret in Supabase Edge Function Secrets Management. Never commit it to GitHub.
 
 ## Deployment
 
-The repository includes .github/workflows/pages.yml for GitHub Pages. Set GitHub Pages to use GitHub Actions as its source.
+.github/workflows/pages.yml deploys the static site to GitHub Pages after JavaScript validation.
 
-## Competition focus
+## Primary sources
 
-The project is intentionally nonpartisan. It focuses on primary-source civic data, transparent descriptions, clear source/date labeling, useful search and comparison tools, accessibility, responsive design, secure user data, reproducible deployment, and clear documentation.
-
-It does not tell users which candidate, party, member, or policy to support.
+- U.S. Census Bureau: https://www.census.gov/
+- Census data: https://data.census.gov/
+- USA.gov: https://www.usa.gov/
+- Congress.gov: https://www.congress.gov/
+- U.S. Department of Transportation: https://www.transportation.gov/
+- OpenStreetMap: https://www.openstreetmap.org/
 
 ## Important
 
-The records embedded in app.js are demonstration records. They should not be presented as current congressional facts. A live deployment should populate the database from verified primary-source records.
+CivicSignal is an educational civic-information tool. A measured difference is not proof of a cause, and a generated explanation does not replace the underlying primary source.
