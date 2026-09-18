@@ -57,67 +57,25 @@
   }
 
   async function loadCongressData() {
-    const key = C.CONGRESS_API_KEY;
-    if (!key) return false;
-    const api = "https://api.congress.gov/v3";
-    const headers = {Accept:"application/json"};
+    if (!sb) return false;
     try {
-      const current = await fetch(api + "/congress/current?format=json&api_key=" + encodeURIComponent(key), {headers}).then(r => {
-        if (!r.ok) throw new Error("Congress.gov request failed: " + r.status);
-        return r.json();
-      });
-      const congress = current?.congress?.number;
-      if (!congress) return false;
+      const { data, error } = await sb.functions.invoke("congress-data", { body: {} });
+      if (error) throw error;
+      if (!data?.members || !data?.bills) throw new Error("Congress data response was incomplete.");
 
-      const membersJson = await fetch(api + "/member/congress/" + congress + "?format=json&limit=250&api_key=" + encodeURIComponent(key), {headers}).then(r => {
-        if (!r.ok) throw new Error("Member request failed: " + r.status);
-        return r.json();
-      });
-      const members = (membersJson.members || []).map(m => ({
-        id:m.bioguideId,
-        name:m.name || m.directOrderName || m.invertedOrderName || "Unknown",
-        party:m.partyName || m.party || "",
-        state:m.state || "",
-        district:m.district ? String(m.district).padStart(2,"0") : "00",
-        chamber:m.chamber || "",
-        role:m.chamber === "Senate" ? "Senator" : "Representative",
-        committees:"",
-        official_url:m.url || "https://www.congress.gov/member/" + encodeURIComponent(m.bioguideId || ""),
-        updated:new Date().toISOString().slice(0,10)
-      }));
-
-      const billsJson = await fetch(api + "/bill/" + congress + "?format=json&limit=250&api_key=" + encodeURIComponent(key), {headers}).then(r => {
-        if (!r.ok) throw new Error("Bill request failed: " + r.status);
-        return r.json();
-      });
-      const bills = (billsJson.bills || []).map(b => {
-        const type = String(b.type || "").toLowerCase();
-        const number = b.number;
-        const id = String(b.type || "").toUpperCase() + "-" + number;
-        return {
-          id,
-          title:b.title || id,
-          chamber:type === "s" ? "Senate" : type === "hr" || type === "hres" || type === "hjres" || type === "hconres" ? "House" : "",
-          status:b.latestAction?.text || "Latest action available",
-          sponsor:"",
-          topic:"",
-          official_url:b.url || "https://www.congress.gov/bill/" + congress + "/" + type + "/" + number,
-          updated:b.updateDate ? b.updateDate.slice(0,10) : new Date().toISOString().slice(0,10),
-          summary:b.latestAction?.text || "See the official Congress.gov record for the latest action and details."
-        };
-      });
-
-      state.members = members;
-      state.bills = bills;
+      state.members = data.members;
+      state.bills = data.bills;
       state.live = true;
 
-      if (sb) {
-        await sb.from("congress_members").upsert(members,{onConflict:"id"});
-        await sb.from("congress_bills").upsert(bills,{onConflict:"id"});
-      }
+      const [memberWrite, billWrite] = await Promise.all([
+        sb.from("congress_members").upsert(state.members, { onConflict: "id" }),
+        sb.from("congress_bills").upsert(state.bills, { onConflict: "id" })
+      ]);
+      if (memberWrite.error) console.warn("Member cache update failed:", memberWrite.error);
+      if (billWrite.error) console.warn("Bill cache update failed:", billWrite.error);
       return true;
-    } catch(e) {
-      console.warn("Congress.gov load failed:", e);
+    } catch (e) {
+      console.warn("Congress.gov live sync failed:", e);
       return false;
     }
   }
@@ -165,7 +123,7 @@
               <button class="mobilemenu" id="mobileMenu">☰</button>
               <div class="search"><input id="globalSearch" placeholder="Search members, bills, topics…" value="${esc(state.query)}" /></div>
             </div>
-            <div class="userpill"><span class="tag ${state.live?"green":"amber"}">${state.live?"LIVE DATA":"DEMO DATA"}</span><span>${state.user?.email ? esc(state.user.email) : "Research mode"}</span><div class="avatar">${state.user ? esc(initials(state.user.email)) : "R"}</div></div>
+            <div class="userpill"><span class="tag ${state.live?"green":"amber"}">${state.live?"LIVE DATA":"DATA UNAVAILABLE"}</span><span>${state.user?.email ? esc(state.user.email) : "Research mode"}</span><div class="avatar">${state.user ? esc(initials(state.user.email)) : "R"}</div></div>
           </header>
           <section class="content">${viewHTML()}</section>
         </main>
@@ -227,7 +185,7 @@
     const q=state.query.toLowerCase();
     const rows=state.bills.filter(b=>[b.id,b.title,b.topic,b.status,b.sponsor,b.chamber].join(" ").toLowerCase().includes(q));
     return `<div class="hero"><div><div class="eyebrow">Legislation</div><h1>Bill tracker</h1><p>Search bills by title, topic, sponsor, chamber, or status.</p></div></div>
-      <div class="notice">For live records, use primary congressional sources. Demo records are clearly marked and exist so the interface remains usable before a data provider is configured.</div>
+      <div class="notice">Live records are sourced from Congress.gov through a server-side data connection. Verify important details against the official congressional record.</div>
       <div class="toolbar"><input class="field" id="billFilter" placeholder="Search legislation…" value="${esc(state.query)}" /><select class="field" id="statusFilter"><option value="">All statuses</option><option>Introduced</option><option>Committee</option><option>Floor</option><option>Passed House</option></select><select class="field" id="topicFilter"><option value="">All topics</option>${[...new Set(state.bills.map(x=>x.topic))].map(x=>`<option>${esc(x)}</option>`).join("")}</select></div>
       <div class="card"><div class="tablewrap"><table class="table"><thead><tr><th>Bill</th><th>Topic</th><th>Status</th><th>Sponsor</th><th>Updated</th><th></th></tr></thead><tbody>${rows.map(b=>`<tr><td><strong>${esc(b.id)}</strong><small>${esc(b.title)}</small></td><td>${esc(b.topic)}</td><td><span class="tag blue">${esc(b.status)}</span></td><td>${esc(b.sponsor)}</td><td>${esc(b.updated)}</td><td><button class="btn" data-bill="${esc(b.id)}">Open</button></td></tr>`).join("") || '<tr><td colspan="6" class="empty">No bills found.</td></tr>'}</tbody></table></div></div>`;
   }
