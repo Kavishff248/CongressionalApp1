@@ -14,41 +14,111 @@
     user: null
   };
 
-  const demoMembers = [
-    {id:"D001",name:"Alexandra Morgan",party:"D",state:"SC",district:"07",chamber:"House",role:"Representative",committees:"Energy & Commerce; Education",updated:"2026-09-16",score:78},
-    {id:"R001",name:"Daniel Carter",party:"R",state:"SC",district:"01",chamber:"House",role:"Representative",committees:"Armed Services; Budget",updated:"2026-09-16",score:84},
-    {id:"I001",name:"Jordan Lee",party:"I",state:"SC",district:"00",chamber:"Senate",role:"Senator",committees:"Judiciary; Finance",updated:"2026-09-16",score:81},
-    {id:"D002",name:"Maria Thompson",party:"D",state:"NC",district:"04",chamber:"House",role:"Representative",committees:"Science; Agriculture",updated:"2026-09-16",score:72},
-    {id:"R002",name:"Ethan Brooks",party:"R",state:"GA",district:"05",chamber:"House",role:"Representative",committees:"Transportation; Small Business",updated:"2026-09-16",score:76},
-    {id:"D003",name:"Priya Shah",party:"D",state:"VA",district:"08",chamber:"House",role:"Representative",committees:"Foreign Affairs; Intelligence",updated:"2026-09-16",score:89}
-  ];
-  const demoBills = [
-    {id:"HR-1024",title:"Digital Access and Connectivity Act",chamber:"House",status:"Introduced",sponsor:"Alexandra Morgan",topic:"Technology",updated:"2026-09-15",summary:"Would expand access to broadband infrastructure and digital skills programs."},
-    {id:"S-418",title:"Clean Energy Research Act",chamber:"Senate",status:"Committee",sponsor:"Jordan Lee",topic:"Energy",updated:"2026-09-14",summary:"Would authorize federal support for clean-energy research and demonstration programs."},
-    {id:"HR-781",title:"Student Data Privacy Act",chamber:"House",status:"Passed House",sponsor:"Maria Thompson",topic:"Education",updated:"2026-09-13",summary:"Would establish standards for handling student education data by covered services."},
-    {id:"S-902",title:"Veterans Workforce Pathways Act",chamber:"Senate",status:"Floor",sponsor:"Daniel Carter",topic:"Veterans",updated:"2026-09-12",summary:"Would create workforce and training grants targeted at transitioning veterans."},
-    {id:"HR-1207",title:"Research Infrastructure Modernization Act",chamber:"House",status:"Introduced",sponsor:"Priya Shah",topic:"Science",updated:"2026-09-11",summary:"Would support modernization of federally funded research infrastructure."}
-  ];
+  const demoMembers = [];
+  const demoBills = [];
 
   const esc = (s="") => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const initials = name => name.split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
   const partyClass = p => p==="D" ? "blue" : p==="R" ? "red" : "amber";
 
   async function loadData() {
-    state.members = [...demoMembers];
-    state.bills = [...demoBills];
-    if (sb) {
-      try {
-        const [m,b] = await Promise.all([
-          sb.from("members").select("*").order("name"),
-          sb.from("bills").select("*").order("updated",{ascending:false})
-        ]);
-        if (!m.error && m.data?.length) state.members = m.data;
-        if (!b.error && b.data?.length) state.bills = b.data;
-        state.live = Boolean((m.data?.length || b.data?.length));
-        const {data:{user}} = await sb.auth.getUser();
-        state.user = user || null;
-      } catch(e) { console.warn("Supabase read fallback:", e); }
+    state.members = [];
+    state.bills = [];
+    state.live = false;
+    if (!sb) return;
+
+    try {
+      const [m,b] = await Promise.all([
+        sb.from("members").select("*").order("name"),
+        sb.from("bills").select("*").order("updated",{ascending:false})
+      ]);
+      if (m.error) throw m.error;
+      if (b.error) throw b.error;
+      state.members = m.data || [];
+      state.bills = b.data || [];
+      state.live = state.members.length > 0 || state.bills.length > 0;
+
+      const {data:{user}} = await sb.auth.getUser();
+      state.user = user || null;
+
+      if (state.user) {
+        const {data:saved,error} = await sb.from("saved_items")
+          .select("item_type,item_id")
+          .eq("user_id",state.user.id);
+        if (!error && saved) {
+          state.saved = saved.map(x => x.item_type + ":" + x.item_id);
+          localStorage.setItem("congressional_saved", JSON.stringify(state.saved));
+        }
+      }
+    } catch(e) {
+      state.live = false;
+      console.warn("Supabase data load failed:", e);
+    }
+  }
+
+  async function loadCongressData() {
+    const key = C.CONGRESS_API_KEY;
+    if (!key) return false;
+    const api = "https://api.congress.gov/v3";
+    const headers = {Accept:"application/json"};
+    try {
+      const current = await fetch(api + "/congress/current?format=json&api_key=" + encodeURIComponent(key), {headers}).then(r => {
+        if (!r.ok) throw new Error("Congress.gov request failed: " + r.status);
+        return r.json();
+      });
+      const congress = current?.congress?.number;
+      if (!congress) return false;
+
+      const membersJson = await fetch(api + "/member/congress/" + congress + "?format=json&limit=250&api_key=" + encodeURIComponent(key), {headers}).then(r => {
+        if (!r.ok) throw new Error("Member request failed: " + r.status);
+        return r.json();
+      });
+      const members = (membersJson.members || []).map(m => ({
+        id:m.bioguideId,
+        name:m.name || m.directOrderName || m.invertedOrderName || "Unknown",
+        party:m.partyName || m.party || "",
+        state:m.state || "",
+        district:m.district ? String(m.district).padStart(2,"0") : "00",
+        chamber:m.chamber || "",
+        role:m.chamber === "Senate" ? "Senator" : "Representative",
+        committees:"",
+        official_url:m.url || "https://www.congress.gov/member/" + encodeURIComponent(m.bioguideId || ""),
+        updated:new Date().toISOString().slice(0,10)
+      }));
+
+      const billsJson = await fetch(api + "/bill/" + congress + "?format=json&limit=250&api_key=" + encodeURIComponent(key), {headers}).then(r => {
+        if (!r.ok) throw new Error("Bill request failed: " + r.status);
+        return r.json();
+      });
+      const bills = (billsJson.bills || []).map(b => {
+        const type = String(b.type || "").toLowerCase();
+        const number = b.number;
+        const id = String(b.type || "").toUpperCase() + "-" + number;
+        return {
+          id,
+          title:b.title || id,
+          chamber:type === "s" ? "Senate" : type === "hr" || type === "hres" || type === "hjres" || type === "hconres" ? "House" : "",
+          status:b.latestAction?.text || "Latest action available",
+          sponsor:"",
+          topic:"",
+          official_url:b.url || "https://www.congress.gov/bill/" + congress + "/" + type + "/" + number,
+          updated:b.updateDate ? b.updateDate.slice(0,10) : new Date().toISOString().slice(0,10),
+          summary:b.latestAction?.text || "See the official Congress.gov record for the latest action and details."
+        };
+      });
+
+      state.members = members;
+      state.bills = bills;
+      state.live = true;
+
+      if (sb) {
+        await sb.from("members").upsert(members,{onConflict:"id"});
+        await sb.from("bills").upsert(bills,{onConflict:"id"});
+      }
+      return true;
+    } catch(e) {
+      console.warn("Congress.gov load failed:", e);
+      return false;
     }
   }
 
@@ -58,7 +128,13 @@
     } else state.saved.push(type+":"+id);
     localStorage.setItem("congressional_saved", JSON.stringify(state.saved));
     if (sb && state.user) {
-      try { await sb.from("saved_items").upsert({user_id:state.user.id,item_type:type,item_id:id}); } catch(e) {}
+      try {
+        if (state.saved.includes(type+":"+id)) {
+          await sb.from("saved_items").upsert({user_id:state.user.id,item_type:type,item_id:id});
+        } else {
+          await sb.from("saved_items").delete().eq("user_id",state.user.id).eq("item_type",type).eq("item_id",id);
+        }
+      } catch(e) { console.warn("Watchlist sync failed:", e); }
     }
     toast(state.saved.includes(type+":"+id) ? "Saved to your watchlist." : "Removed from watchlist.");
     render();
@@ -218,8 +294,7 @@
     const all=state.members.filter(m=>[m.name,m.state,m.party,m.chamber,m.role,m.committees].join(" ").toLowerCase().includes(q));
     state.members=all.filter(m=>(!party||m.party===party)&&(!chamber||m.chamber===chamber));
     render();
-    state.members=[...demoMembers];
-    if(sb) loadData().then(()=>{});
+    render();
   }
 
   function findDistrict(){
@@ -232,5 +307,8 @@
   function toast(msg){const el=document.createElement("div");el.className="toast";el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),2300)}
   function render(){layout()}
   state.saved=JSON.parse(localStorage.getItem("congressional_saved")||"[]");
-  loadData().then(render);
+  loadData().then(async () => {
+    if (!state.live) await loadCongressData();
+    render();
+  });
 })();
