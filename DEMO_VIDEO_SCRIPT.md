@@ -77,6 +77,5 @@ Say:
 - Show the pending state before verification.
 - Verify the report before showing it publicly.
 - Show one complete Civic Action Pathway.
-- Keep AI out of the opening and main story.
 - Do not claim an agency acted unless the report has a documented event.
 - Keep the video close to two minutes.
