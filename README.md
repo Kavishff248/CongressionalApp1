@@ -4,62 +4,89 @@
 
 CivicSignal is a nonpartisan civic-data web app built around:
 
-Problem → Evidence → Explain → Government pathway → Action
+**Problem → Evidence → Explain → Government pathway → Action**
 
-## Implemented
+## What is working
 
-- Community Explorer using the 2024 Census ACS 5-year API
-- Transparent county/state comparisons for population, poverty, unemployment, and median household income
-- Interactive OpenStreetMap/Leaflet issue map
-- Issue categories for roads, flooding, transit, schools, environment, development, facilities, and safety
-- Community issue reporting with pending-review workflow
-- Map pinning for issue reports
-- Supabase persistence with Row Level Security
-- Saved community signals
-- Evidence Explainer with a verified rule-based fallback
-- Secure Supabase Edge Function for optional AI explanations
-- Authorized report-review desk with verify/reject workflow
-- Supabase Auth sign-in for account-only features
-- Source library linking to primary government sources
-- Responsive desktop/mobile UI
-- GitHub Pages deployment and JavaScript validation
+- South Carolina Community Explorer using Census Bureau 2024 ACS 5-year data
+- District-focused homepage for South Carolina's 7th Congressional District footprint
+- Live county cards for Florence, Darlington, Dillon, Marion, and Marlboro
+- Interactive Leaflet/OpenStreetMap issue map
+- Live public layers from National Weather Service, FEMA, NIFC/WFIGS, and SCDOT
+- Real community issue submission form with map pinning and exact-address support
+- Supabase persistence for reports
+- Pending → human review → verified publication workflow
+- Admin review desk with verify, reject, and remove controls
+- Verified Filed Reports page
+- Civic Action Pathway scorecard
+- Policy Impact Tracker with responsible-agency guidance, funding pathways, public-meeting guidance, and documented event history
+- Community signal clustering for nearby verified reports
+- Community conditions snapshot with a transparent, non-official formula
+- Rule-based trend checks using 2020–2024 ACS 5-year history
+- Congressional and federal-program context linked to primary government sources
+- Source library
+- Optional AI explanations through a protected Supabase Edge Function
+- Responsive desktop/mobile interface and dark mode
+
+## Real report workflow
+
+Community reports are not fake demo records.
+
+A submitted report is stored as 'pending'. It does not appear on the public map until an authorized reviewer verifies it. Verified reports can then appear in the map and Filed Reports page and can carry documented civic-event history.
+
+If there are no verified reports, the public interface shows an honest empty state rather than inventing reports.
+
+## Local focus
+
+The current homepage focuses on five counties in the South Carolina 7th Congressional District footprint:
+
+- Florence County — part of the county is in the district
+- Darlington County
+- Dillon County
+- Marion County
+- Marlboro County
+
+The district also includes Chesterfield, Georgetown, and Horry Counties. The app does not claim that the five displayed counties are the whole district.
+
+County statistics are fetched through the Supabase census-data Edge Function from the Census Bureau's 2024 ACS 5-year dataset.
+
+The app also uses documented local federal project records as evidence links. These are presented as records and sources, not as endorsements or proof of a political position.
+
+## Technical implementation
+
+CivicSignal is not a static HTML mockup.
+
+- **Frontend:** HTML, CSS, JavaScript
+- **Database:** Supabase Postgres
+- **Security:** Supabase Row Level Security
+- **Server-side functions:** Supabase Edge Functions
+- **Mapping:** Leaflet + OpenStreetMap
+- **Public data:** Census Bureau, National Weather Service, FEMA, NIFC/WFIGS, SCDOT
+- **Deployment:** GitHub Pages
+
+The browser contains only the Supabase publishable key. Secret/service-role credentials are not committed to the repository. The Census API key stays in Supabase secrets.
+
+See TECHNICAL.md for the architecture and data flow.
 
 ## Evidence model
 
 CivicSignal distinguishes:
 
-1. Verified evidence — data returned by primary public sources.
-2. Calculated values — rates derived from documented source variables.
-3. Generated explanations — text produced by the AI service when configured.
-4. Civic pathways — general jurisdiction guidance that users are told to verify.
+1. **Verified evidence** — data returned by a cited primary source.
+2. **Calculated values** — rates or indexes derived from documented source variables.
+3. **Generated explanations** — optional text produced by the AI service.
+4. **Civic pathways** — general jurisdiction guidance that users are told to verify.
+5. **Community observations** — user-submitted reports that are separate from official data until reviewed.
 
-The app does not recommend candidates, parties, or policy positions.
+A generated explanation does not replace the underlying source.
 
-Community reports are inserted as pending and are only shown on the public map after an administrator marks them verified.
+## Demo
 
-## Supabase
+See DEMO_VIDEO_SCRIPT.md for the 2-minute demonstration plan.
 
-Application tables include reports, report_photos, comments, community_priorities, notification_queue, civic_saved_signals, congress_members, congress_bills, and congress_saved_items.
+The recommended demo flow is:
 
-RLS is enabled on the exposed application tables.
-
-Edge Functions:
-
-- congress-data
-- civic-explain
-- review-report
-
-The browser contains only the Supabase publishable key. Secret/service-role credentials are never placed in the repository.
-
-## AI explanation
-
-The civic-explain Edge Function is deployed and requires the Supabase project secret OPENAI_API_KEY. Without that secret, CivicSignal safely keeps the source-backed fallback explanation instead of pretending an AI response was generated.
-
-Configure the secret in Supabase Edge Function Secrets Management. Never commit it to GitHub.
-
-## Deployment
-
-.github/workflows/pages.yml deploys the static site to GitHub Pages after JavaScript validation.
+**Local problem → real county data → live map → submit report → human review → verified report → Civic Action Pathway**
 
 ## Primary sources
 
@@ -68,16 +95,29 @@ Configure the secret in Supabase Edge Function Secrets Management. Never commit 
 - USA.gov: https://www.usa.gov/
 - Congress.gov: https://www.congress.gov/
 - U.S. Department of Transportation: https://www.transportation.gov/
+- South Carolina Department of Transportation: https://www.scdot.org/
+- National Weather Service: https://www.weather.gov/
+- FEMA: https://www.fema.gov/
+- National Interagency Fire Center: https://www.nifc.gov/
 - OpenStreetMap: https://www.openstreetmap.org/
+
+## Supabase
+
+Application data includes community reports, report events, policy trackers, congressional data, and other civic application tables.
+
+RLS is enabled on exposed application tables. Public report inserts are allowed only into the intended report workflow; review and civic-event management are protected.
+
+Edge Functions include:
+
+- census-data
+- congress-data
+- civic-explain
+- review-report
+
+The census-data function retrieves Census data server-side so the Census API key does not need to be exposed in the browser.
 
 ## Important
 
-CivicSignal is an educational civic-information tool. A measured difference is not proof of a cause, and a generated explanation does not replace the underlying primary source.
+CivicSignal is an educational civic-information tool. A measured difference is not proof of a cause, a generated explanation is not an official source, and a possible funding program is not proof that a local project received funding.
 
-## Production notes
-
-- The browser uses a Supabase publishable key only. No service-role or secret key is committed.
-- Community reports are never published directly: public submissions enter `pending`, and an authorized reviewer must mark them `verified` before they appear on the map.
-- Supabase Data API grants are explicit in `supabase/schema.sql`; private tables are not exposed to browser roles.
-- The 2024 ACS explorer uses the Census Data API. Census now requires API keys for its Data API, so a production-wide deployment should keep the Census key server-side in Supabase rather than putting it in the browser. The current app retains a South Carolina county fallback so the interface does not silently invent data.
-- GitHub Pages uses one deployment workflow: `.github/workflows/pages.yml`. JavaScript syntax is checked before deployment.
+The app does not recommend candidates, parties, or policy positions.
