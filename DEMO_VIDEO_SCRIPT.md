@@ -1,76 +1,82 @@
-# CivicSignal — 2-minute Congressional App Challenge demo
+# CivicSignal — focused 2-minute demo
 
-## 0:00–0:15 — The local problem
+## Goal
 
-Show the South Carolina map and the five district-focus counties.
+Show one complete story instead of trying to demonstrate every feature.
 
-Say:
+**Find → Report → Verify → Understand who can address it**
 
-“Local problems are often easy to notice but hard to follow. A resident may see flooding, a road problem, or a public-facility issue, but the next question is: who handles it, what evidence exists, and what happens after it is reported?”
+## 0:00–0:15 — Start with the local problem
 
-If you have a real personal connection to a local issue, replace this with your own true experience. Do not invent a personal story.
-
-## 0:15–0:35 — Real local data
-
-Show CivicSignal homepage -> district focus -> Florence, Darlington, Dillon, Marion, and Marlboro cards.
+Show the South Carolina map and the local county focus.
 
 Say:
 
-“CivicSignal starts with real South Carolina data. The county cards are loaded through a Supabase Edge Function from the Census Bureau's 2024 American Community Survey. Population, median household income, and poverty are shown with the source identified.”
+“Local problems can be easy to see but hard to follow. If I notice a road or pedestrian-safety problem, I still need to know where to document it, who handles it, and what happens after I report it.”
 
-Open Community Explorer and select one county.
+Use a real personal connection only if you actually have one.
 
-## 0:35–0:55 — The technical system
+## 0:15–0:30 — Find
 
-Show Community Explorer, then Issue Map.
-
-Say:
-
-“This is a JavaScript web application backed by Supabase Postgres with Row Level Security. The map combines Leaflet with public data from the National Weather Service, FEMA, NIFC/WFIGS, SCDOT, and OpenStreetMap.”
-
-Click a live map feature and show its source.
-
-## 0:55–1:20 — Real community report
-
-Show Report an Issue.
+Show CivicSignal's Community Explorer and the district county data.
 
 Say:
 
-“A community report is not treated as official evidence. A resident submits an observable issue and location. Supabase stores it as pending. An authorized reviewer must verify it before it appears on the public map.”
+“CivicSignal starts with local public data. I can explore county conditions and use the map to understand what is happening around a location.”
 
-Submit a real demo report. Then show the review desk.
+## 0:30–0:55 — Report
 
-## 1:20–1:40 — From report to action
-
-Show Filed Reports -> Policy Impact Tracker -> Civic Action Pathway.
+Open Report an Issue and select a real road or pedestrian-safety example.
 
 Say:
 
-“Once verified, the report can be followed through a civic pathway. CivicSignal separates a possible responsible agency or funding source from documented government action. Events such as an agency notification, public meeting, funding identification, work started, and resolution are tracked separately.”
+“Now I can document the problem with a category, description, location, and evidence. The report is stored in Supabase instead of being a fake sample on the page.”
 
-Show the scorecard and one policy source.
+Submit the report.
 
-## 1:40–1:55 — Local federal connection
+## 0:55–1:15 — Verify
 
-Show the local evidence card and primary source.
-
-Say:
-
-“The district focus also connects local issues to documented federal programs and project records. For example, public project records for South Carolina's Seventh District include stormwater work in Dillon County and Crooked Creek improvements in Marlboro County. CivicSignal links back to the primary record instead of treating a generic federal program as proof that a local project was funded.”
-
-## 1:55–2:00 — Close
-
-Show the CivicSignal homepage.
+Show the pending report in the review desk.
 
 Say:
 
-“The goal is simple: find a local problem, follow the evidence, and make the public pathway easier to understand.”
+“A community submission is not treated as official evidence just because someone submitted it. It enters a pending state. An authorized human reviewer checks it before it becomes public.”
 
-## Before recording
+Verify the report.
 
-- Use a real submitted report, not an invented sample.
-- Make sure the report is verified before recording the public-map step.
-- Show the live Census cards and source.
-- Show at least one live map layer.
-- Show the Supabase-backed report workflow.
-- Replace the optional personal-connection section with your own true experience if you have one.
+## 1:15–1:35 — Follow the civic pathway
+
+Show the verified report, Policy Impact Tracker, and Civic Action Pathway.
+
+Say:
+
+“After verification, CivicSignal connects the report to the relevant government pathway. It separates possible agencies and funding programs from documented actions. The pathway can record an agency notification, public meeting, funding identification, work started, and resolution when those events have evidence.”
+
+## 1:35–1:50 — Show the technical architecture
+
+Show the architecture section on the homepage.
+
+Say:
+
+“Under the interface is a JavaScript application using Leaflet, Supabase Postgres with Row Level Security, Edge Functions, and government APIs. The Census API key stays server-side in Supabase.”
+
+Do not spend time opening every source or feature.
+
+## 1:50–2:00 — Explain why it exists
+
+Show the “Why CivicSignal?” section.
+
+Say:
+
+“Government data, maps, community reports, and agency information already exist. CivicSignal connects them into one workflow: find a local problem, document it, verify it, and understand who can address it.”
+
+## Recording checklist
+
+- Use one real report.
+- Use a real location.
+- Show the pending state before verification.
+- Verify the report before showing it publicly.
+- Show one complete Civic Action Pathway.
+- Keep AI out of the opening and main story.
+- Do not claim an agency acted unless the report has a documented event.
+- Keep the video close to two minutes.
