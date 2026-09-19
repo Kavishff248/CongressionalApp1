@@ -9,7 +9,7 @@ CivicSignal is a working web application, not a static HTML mockup.
 - JavaScript for routing, state, API calls, maps, calculations, and event handling
 - Supabase Postgres for persistent community reports and civic-event data
 - Supabase Row Level Security for public/private access rules
-- Supabase Edge Functions for server-side Census access, AI explanation, Congress data, and report review
+- Supabase Edge Functions for server-side Census access, Congress data, and report review
 - Leaflet + OpenStreetMap for interactive mapping
 - Census Bureau 2024 ACS 5-year data for county measures
 - National Weather Service, FEMA, NIFC/WFIGS, and SCDOT for map layers
@@ -39,11 +39,9 @@ CivicSignal separates:
 
 - primary-source data
 - values calculated from primary-source variables
-- generated AI explanations
 - general civic pathway guidance
 - community observations
 
-This keeps a generated explanation from being presented as if it were an official source.
 
 ## Why the district focus is real
 
