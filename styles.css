@@ -95,3 +95,51 @@ body{letter-spacing:.01em}.side{padding:26px 18px;background:#fbfcfc}.brand{marg
   .hero h1{font-size:29px}
   .top{padding:0 12px}
 }
+
+
+/* Civic action features */
+.health-card,.consensus-card,.policy-card,.success-card{margin-top:18px}
+.health-total{font-size:34px;line-height:1;color:var(--blue);min-width:54px;text-align:right}
+.health-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:0 22px 20px}
+.health-grid>div{border:1px solid var(--line);border-radius:9px;padding:14px;background:var(--paper)}
+.health-grid span{display:block;color:var(--muted);font-size:11px}
+.health-grid b{display:block;font-size:24px;margin:7px 0}
+.health-grid small{color:var(--muted);font-size:9px;line-height:1.4}
+.formula-note{margin:0 22px 22px;padding:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+.formula-note summary{cursor:pointer;color:var(--ink);font-weight:700}
+.consensus-row{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.consensus-row:last-child{border-bottom:0}
+.consensus-row>div{flex:1}
+.consensus-row p{margin:4px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
+.policy-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 22px 22px}
+.policy-flow>div{border:1px solid var(--line);border-radius:9px;padding:14px;background:var(--paper)}
+.policy-flow span{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;font-weight:800;margin-bottom:9px}
+.policy-flow b,.policy-columns h3,.policy-timeline h3{font-size:12px}
+.policy-flow p,.policy-columns p,.policy-next p{font-size:10px;line-height:1.5;color:var(--muted);margin:5px 0 0}
+.policy-columns{display:grid;grid-template-columns:1fr 1fr;gap:18px;border-top:1px solid var(--line);padding:20px 22px}
+.policy-columns>div{border:1px solid var(--line);border-radius:9px;padding:15px}
+.federal-link{padding:10px 0;border-top:1px solid var(--line)}
+.federal-link:first-child{border-top:0}
+.federal-link b,.federal-link span,.federal-link a{display:block}
+.federal-link span{font-size:10px;color:var(--muted);margin:3px 0 5px}
+.federal-link a,.text-btn{font-size:10px}
+.policy-timeline{padding:0 22px 18px}
+.timeline-item{display:grid;grid-template-columns:12px 1fr;gap:10px;position:relative;padding:0 0 14px}
+.timeline-item>span{width:9px;height:9px;border-radius:50%;background:var(--blue);margin-top:4px;box-shadow:0 0 0 3px var(--paper)}
+.timeline-item>div{border-bottom:1px solid var(--line);padding-bottom:10px}
+.timeline-item b,.timeline-item small,.timeline-item p{display:block}
+.timeline-item small{font-size:9px;color:var(--muted);margin-top:2px}
+.timeline-item p{font-size:10px;color:var(--muted);margin:4px 0 0}
+.policy-next{border-top:1px solid var(--line);padding:16px 22px 20px}
+.inline-tracker{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.inline-tracker summary{cursor:pointer;font-size:11px;font-weight:800;color:var(--blue)}
+.inline-tracker-body{margin-top:10px}
+.inline-tracker-body .policy-card{margin:0;box-shadow:none;border:1px solid var(--line)}
+.success-story{padding:12px 0;border-bottom:1px solid var(--line)}
+.success-story:last-child{border-bottom:0}
+.success-story>b,.success-story>span,.success-story>p{display:block}
+.success-story>span{font-size:10px;color:var(--muted);margin-top:3px}
+.success-story>p{font-size:10px;color:var(--muted);margin:5px 0 0}
+[data-theme="dark"] .health-grid>div,[data-theme="dark"] .policy-flow>div,[data-theme="dark"] .policy-columns>div{background:#171d21}
+@media(max-width:1000px){.health-grid{grid-template-columns:repeat(3,1fr)}.policy-flow{grid-template-columns:repeat(2,1fr)}.policy-columns{grid-template-columns:1fr}}
+@media(max-width:650px){.health-grid{grid-template-columns:1fr 1fr}.policy-flow{grid-template-columns:1fr}.health-total{font-size:28px}}
