@@ -4,7 +4,7 @@
 
 CivicSignal is a nonpartisan civic-data web app built around:
 
-**Problem → Evidence → Explain → Government pathway → Action**
+**Problem → Evidence → Government pathway → Action**
 
 ## What is working
 
@@ -25,7 +25,6 @@ CivicSignal is a nonpartisan civic-data web app built around:
 - Rule-based trend checks using 2020–2024 ACS 5-year history
 - Congressional and federal-program context linked to primary government sources
 - Source library
-- Optional AI explanations through a protected Supabase Edge Function
 - Responsive desktop/mobile interface and dark mode
 
 ## Real report workflow
@@ -74,11 +73,9 @@ CivicSignal distinguishes:
 
 1. **Verified evidence** — data returned by a cited primary source.
 2. **Calculated values** — rates or indexes derived from documented source variables.
-3. **Generated explanations** — optional text produced by the AI service.
 4. **Civic pathways** — general jurisdiction guidance that users are told to verify.
 5. **Community observations** — user-submitted reports that are separate from official data until reviewed.
 
-A generated explanation does not replace the underlying source.
 
 ## Demo
 
@@ -111,13 +108,12 @@ Edge Functions include:
 
 - census-data
 - congress-data
-- civic-explain
 - review-report
 
 The census-data function retrieves Census data server-side so the Census API key does not need to be exposed in the browser.
 
 ## Important
 
-CivicSignal is an educational civic-information tool. A measured difference is not proof of a cause, a generated explanation is not an official source, and a possible funding program is not proof that a local project received funding.
+CivicSignal is an educational civic-information tool. A measured difference is not proof of a cause, and a possible funding program is not proof that a local project received funding.
 
 The app does not recommend candidates, parties, or policy positions.
