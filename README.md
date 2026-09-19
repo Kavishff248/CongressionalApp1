@@ -10,7 +10,7 @@ CivicSignal is a civic information tool that connects local public data with ver
 
 * Explore local public data
 * Find community issues
-* Report problems
+* Report problemss
 * Review and verify reports
 * Follow documented civic actions
 
