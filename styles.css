@@ -163,3 +163,20 @@ body{letter-spacing:.01em}.side{padding:26px 18px;background:#fbfcfc}.brand{marg
 .congress-link b{font-size:13px}.congress-link span{font-size:12px;color:var(--muted);line-height:1.4}
 [data-theme="dark"] .congress-context{background:#17212b}
 @media(max-width:760px){.congress-links{grid-template-columns:1fr}}
+
+
+/* Civic Action Pathway scorecard */
+.action-scorecard{margin:0 22px 20px;border:1px solid var(--line);border-radius:12px;background:var(--soft);overflow:hidden}
+.action-scorecard-head{display:flex;justify-content:space-between;gap:18px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.action-scorecard-head h3{margin:4px 0 5px;font-size:16px}
+.action-scorecard-head p{margin:0;max-width:720px;color:var(--muted);font-size:11px;line-height:1.5}
+.action-scorecard-head>b{font-size:22px;white-space:nowrap}
+.action-stages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px;padding:8px 20px 12px}
+.action-stage{display:grid;grid-template-columns:24px 1fr;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);opacity:.72}
+.action-stage>span{width:22px;height:22px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800}
+.action-stage.complete{opacity:1}
+.action-stage.complete>span{background:var(--blue);border-color:var(--blue);color:#fff}
+.action-stage b{font-size:11px}
+.action-stage p{margin:3px 0 0;color:var(--muted);font-size:10px;line-height:1.4}
+[data-theme="dark"] .action-scorecard{background:#17212b}
+@media(max-width:700px){.action-stages{grid-template-columns:1fr}.action-scorecard-head{align-items:flex-start}}
