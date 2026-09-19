@@ -149,10 +149,61 @@ function consensusCard(){
   return "<div class='card consensus-card'><div class='head'><div><h2>Community signals</h2><p class='muted'>Nearby verified reports in the same category are grouped when they fall within about 2 miles. This is a data cluster, not a claim about what every resident thinks.</p></div></div><div class='body'>"+(clusters.length?clusters.map(function(c){return "<div class='consensus-row'><span class='signal-card-icon'>"+iconSvg(categoryIcon(c.category))+"</span><div><b>"+esc(CATS[c.category]?.[0]||c.category)+" concern</b><p>"+c.count+" verified reports within about 2 miles in "+esc(c.county||"this area")+"."+(c.address?" Near "+esc(c.address)+".":"")+"</p></div><span class='pill'>Clustered signal</span></div>"}).join(""):"<div class='compare-empty'>No clustered signals yet. Verified reports are kept separate until enough nearby reports share a category.</div>")+"</div></div>";
 }
 
+function congressionalContext(category){
+  const map={
+    roads:[
+      ["House Committee on Transportation and Infrastructure","Transportation and infrastructure oversight","https://www.congress.gov/committee/house-committee-on-transportation-and-infrastructure/hsii00"],
+      ["Senate Committee on Environment and Public Works","Infrastructure and public works matters","https://www.congress.gov/committee/senate-environment-and-public-works/sspw00"],
+      ["Congress.gov legislation","Search current transportation legislation","https://www.congress.gov/legislation"]
+    ],
+    flooding:[
+      ["House Committee on Transportation and Infrastructure","Water infrastructure and flood-risk programs","https://www.congress.gov/committee/house-committee-on-transportation-and-infrastructure/hsii00"],
+      ["Senate Committee on Environment and Public Works","Water resources and flood-risk matters","https://www.congress.gov/committee/senate-environment-and-public-works/sspw00"],
+      ["Congress.gov legislation","Search current water and infrastructure legislation","https://www.congress.gov/legislation"]
+    ],
+    transit:[
+      ["House Committee on Transportation and Infrastructure","Transportation programs and infrastructure","https://www.congress.gov/committee/house-committee-on-transportation-and-infrastructure/hsii00"],
+      ["Senate Committee on Commerce, Science, and Transportation","Transportation and related federal programs","https://www.congress.gov/committee/senate-commerce-science-and-transportation/sscm00"],
+      ["Congress.gov legislation","Search current transportation legislation","https://www.congress.gov/legislation"]
+    ],
+    schools:[
+      ["House Committee on Education and Workforce","Federal education programs","https://www.congress.gov/committee/house-committee-on-education-and-the-workforce/hsed00"],
+      ["Senate Committee on Health, Education, Labor, and Pensions","Federal education policy","https://www.congress.gov/committee/senate-health-education-labor-and-pensions/sshr00"],
+      ["Congress.gov legislation","Search current education legislation","https://www.congress.gov/legislation"]
+    ],
+    environment:[
+      ["House Committee on Energy and Commerce","Environmental and public-health policy areas","https://www.congress.gov/committee/house-committee-on-energy-and-commerce/hsif00"],
+      ["Senate Committee on Environment and Public Works","Environmental and public-works matters","https://www.congress.gov/committee/senate-environment-and-public-works/sspw00"],
+      ["Congress.gov legislation","Search current environmental legislation","https://www.congress.gov/legislation"]
+    ],
+    development:[
+      ["House Committee on Financial Services","Federal housing and community-development programs","https://www.congress.gov/committee/house-committee-on-financial-services/hsba00"],
+      ["Senate Committee on Banking, Housing, and Urban Affairs","Federal housing and community-development programs","https://www.congress.gov/committee/senate-banking-housing-and-urban-affairs/ssbk00"],
+      ["Congress.gov legislation","Search current housing legislation","https://www.congress.gov/legislation"]
+    ],
+    facilities:[
+      ["House Committee on Transportation and Infrastructure","Public infrastructure programs","https://www.congress.gov/committee/house-committee-on-transportation-and-infrastructure/hsii00"],
+      ["Senate Committee on Environment and Public Works","Public works and infrastructure matters","https://www.congress.gov/committee/senate-environment-and-public-works/sspw00"],
+      ["Congress.gov legislation","Search current infrastructure legislation","https://www.congress.gov/legislation"]
+    ],
+    safety:[
+      ["House Committee on the Judiciary","Federal public-safety and justice matters","https://www.congress.gov/committee/house-committee-on-the-judiciary/hsju00"],
+      ["Senate Committee on the Judiciary","Federal justice and public-safety matters","https://www.congress.gov/committee/senate-judiciary/ssju00"],
+      ["Congress.gov legislation","Search current public-safety legislation","https://www.congress.gov/legislation"]
+    ]
+  };
+  return map[category]||map.roads;
+}
+
+function congressionalContextCard(report){
+  const items=congressionalContext(report.category);
+  return "<div class='congress-context'><div class='eyebrow'>Congressional context</div><h3>How this issue connects to federal law and oversight</h3><p class='muted'>These are relevant congressional committees and the official legislation database. A committee connection does not mean Congress has taken action on this specific local report.</p><div class='congress-links'>"+items.map(function(x){return "<a class='congress-link' href='"+esc(x[2])+"' target='_blank' rel='noopener'><b>"+esc(x[0])+"</b><span>"+esc(x[1])+"</span></a>"}).join("")+"</div></div>";
+}
+
 function policyCard(report){
   const p=report.policy||policyTracker(report),f=federalConnections(report.category);
   const events=reportTimeline(report);
-  return "<div class='card policy-card'><div class='head'><div><div class='eyebrow'>Policy Impact Tracker</div><h2>"+esc(report.title)+"</h2><p class='muted'>A factual pathway from a reported problem to the public process that may address it.</p></div><span class='pill'>"+esc(p.current_status||"Verified")+"</span></div><div class='policy-flow'><div><span>1</span><b>Problem</b><p>"+esc(report.description)+"</p></div><div><span>2</span><b>Responsible agency</b><p>"+esc(p.agency||policyTracker(report).agency)+"</p></div><div><span>3</span><b>Current status</b><p>"+esc(p.current_status||"Verified")+"</p></div><div><span>4</span><b>Available funding</b><p>"+esc(p.funding_sources||p.funding||policyTracker(report).funding)+"</p></div><div><span>5</span><b>Next public action</b><p>"+esc(p.public_action||p.action||policyTracker(report).action)+"</p></div></div><div class='policy-columns'><div><h3>Public meetings</h3><p>"+esc(p.meeting_note||policyTracker(report).meeting)+"</p>"+(p.meeting_url?"<a class='text-btn' href='"+esc(p.meeting_url)+"' target='_blank' rel='noopener'>Open meeting source →</a>":"")+"</div><div><h3>Federal connection</h3>"+f.map(function(x){return "<div class='federal-link'><b>"+esc(x[0])+"</b><span>"+esc(x[1])+"</span><a href='"+esc(x[2])+"' target='_blank' rel='noopener'>Official source →</a></div>"}).join("")+"</div></div><div class='policy-timeline'><h3>Status timeline</h3>"+(events.length?events.map(function(e){return "<div class='timeline-item'><span></span><div><b>"+esc(e.title)+"</b><small>"+new Date(e.event_date).toLocaleDateString()+"</small><p>"+esc(e.details||"")+"</p></div></div>"}).join(""):"<p class='muted'>Timeline details will appear as documented public actions are added.</p>")+"</div><div class='policy-next'><b>Similar local evidence</b><p>Use the Issue Map to review other verified reports in the same category. CivicSignal does not label an issue as resolved unless a documented status event supports that claim.</p></div></div>";
+  return "<div class='card policy-card'><div class='head'><div><div class='eyebrow'>Policy Impact Tracker</div><h2>"+esc(report.title)+"</h2><p class='muted'>A factual pathway from a reported problem to the public process that may address it.</p></div><span class='pill'>"+esc(p.current_status||"Verified")+"</span></div><div class='policy-flow'><div><span>1</span><b>Problem</b><p>"+esc(report.description)+"</p></div><div><span>2</span><b>Responsible agency</b><p>"+esc(p.agency||policyTracker(report).agency)+"</p></div><div><span>3</span><b>Current status</b><p>"+esc(p.current_status||"Verified")+"</p></div><div><span>4</span><b>Available funding</b><p>"+esc(p.funding_sources||p.funding||policyTracker(report).funding)+"</p></div><div><span>5</span><b>Next public action</b><p>"+esc(p.public_action||p.action||policyTracker(report).action)+"</p></div></div>"+congressionalContextCard(report)+"<div class='policy-columns'><div><h3>Public meetings</h3><p>"+esc(p.meeting_note||policyTracker(report).meeting)+"</p>"+(p.meeting_url?"<a class='text-btn' href='"+esc(p.meeting_url)+"' target='_blank' rel='noopener'>Open meeting source →</a>":"")+"</div><div><h3>Federal connection</h3>"+f.map(function(x){return "<div class='federal-link'><b>"+esc(x[0])+"</b><span>"+esc(x[1])+"</span><a href='"+esc(x[2])+"' target='_blank' rel='noopener'>Official source →</a></div>"}).join("")+"</div></div><div class='policy-timeline'><h3>Status timeline</h3>"+(events.length?events.map(function(e){return "<div class='timeline-item'><span></span><div><b>"+esc(e.title)+"</b><small>"+new Date(e.event_date).toLocaleDateString()+"</small><p>"+esc(e.details||"")+"</p></div></div>"}).join(""):"<p class='muted'>Timeline details will appear as documented public actions are added.</p>")+"</div><div class='policy-next'><b>Similar local evidence</b><p>Use the Issue Map to review other verified reports in the same category. CivicSignal does not label an issue as resolved unless a documented status event supports that claim.</p></div></div>";
 }
 
 function successStories(){
