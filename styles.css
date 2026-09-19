@@ -38,3 +38,60 @@ body{letter-spacing:.01em}.side{padding:26px 18px;background:#fbfcfc}.brand{marg
 [data-theme="dark"] .leaflet-popup-content-wrapper,[data-theme="dark"] .leaflet-popup-tip{background:#1d2429;color:var(--ink)}
 [data-theme="dark"] .leaflet-control-zoom a{background:#1d2429;color:var(--ink);border-color:var(--line)}
 @media(max-width:800px){.overview-note-grid,.compare-controls{grid-template-columns:1fr}.compare-header,.compare-row{grid-template-columns:1fr 1fr 1fr}.compare-controls .btn{width:100%}}
+
+
+/* Final layout polish — visual only */
+.shell{grid-template-columns:238px minmax(0,1fr)}
+.side{padding:22px 16px}
+.brand{margin-bottom:26px}
+.nav{gap:3px}
+.nav button{padding:10px 12px;font-size:12px}
+.nav button.active{box-shadow:inset 3px 0 0 #1769aa}
+.top{height:60px;padding:0 30px}
+.content{max-width:1320px;padding:34px 42px 72px}
+.hero{margin-bottom:24px}
+.hero h1,.home-hero h1{font-weight:800}
+.home-hero{grid-template-columns:minmax(0,1.45fr) minmax(300px,.55fr);gap:34px;margin-bottom:48px}
+.hero-copy{padding:20px 0}
+.home-summary{padding:24px}
+.grid{gap:16px}
+.card,.signal,.step,.item{box-shadow:0 5px 20px rgba(27,42,54,.045)}
+.feature{padding:21px}
+.feature h3{font-weight:800}
+.section-title{margin-bottom:16px}
+.section-title h2{font-weight:800}
+.controls{padding:15px;margin-bottom:16px}
+.toolbar{grid-template-columns:minmax(0,1.2fr) minmax(220px,.8fr)}
+.field{min-height:39px}
+.map-shell{grid-template-columns:minmax(0,1fr) 295px;min-height:650px}
+.map-shell #map{min-height:650px}
+.map-panel{padding:18px}
+.report-map-card #report-map{height:340px}
+.evidence-band{padding:26px}
+.review-list{border-radius:13px}
+.review-item{padding:21px 22px}
+.auth-wrap{margin:48px auto}
+.empty{padding:55px 30px}
+
+/* Keep the interface comfortable on smaller laptops without changing behavior */
+@media(max-width:1200px){
+  .content{padding-left:30px;padding-right:30px}
+  .home-hero{grid-template-columns:1fr .7fr;gap:24px}
+  .home-hero h1{font-size:50px}
+}
+@media(max-width:1050px){
+  .content{padding:25px 22px 55px}
+  .home-hero{grid-template-columns:1fr}
+  .home-summary{max-width:none}
+  .map-shell{grid-template-columns:1fr}
+}
+@media(max-width:800px){
+  .top{height:58px}
+  .content{padding:22px 18px 50px}
+}
+@media(max-width:560px){
+  .content{padding:18px 14px 42px}
+  .home-hero h1{font-size:38px}
+  .hero h1{font-size:29px}
+  .top{padding:0 12px}
+}
