@@ -143,3 +143,13 @@ body{letter-spacing:.01em}.side{padding:26px 18px;background:#fbfcfc}.brand{marg
 [data-theme="dark"] .health-grid>div,[data-theme="dark"] .policy-flow>div,[data-theme="dark"] .policy-columns>div{background:#171d21}
 @media(max-width:1000px){.health-grid{grid-template-columns:repeat(3,1fr)}.policy-flow{grid-template-columns:repeat(2,1fr)}.policy-columns{grid-template-columns:1fr}}
 @media(max-width:650px){.health-grid{grid-template-columns:1fr 1fr}.policy-flow{grid-template-columns:1fr}.health-total{font-size:28px}}
+
+
+.trend-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 22px 18px}
+.trend-grid>div{border:1px solid var(--line);border-radius:9px;padding:14px;background:var(--paper)}
+.trend-grid span,.trend-grid small{display:block;color:var(--muted);font-size:10px}
+.trend-grid b{display:block;font-size:19px;margin:7px 0}
+.trend-note{padding:0 22px 20px;margin:0}
+[data-theme="dark"] .trend-grid>div{background:#171d21}
+@media(max-width:800px){.trend-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.trend-grid{grid-template-columns:1fr}}
