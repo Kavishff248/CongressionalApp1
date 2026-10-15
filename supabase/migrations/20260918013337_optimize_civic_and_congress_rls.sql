@@ -1,0 +1,1 @@
+-- Historical version marker. Current RLS policies and indexes are included in the baseline migration snapshot.

@@ -1,0 +1,1 @@
+-- Historical version marker. The current schema is reconstructed in the baseline migration because the original file was missing from version control.

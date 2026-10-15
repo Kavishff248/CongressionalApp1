@@ -1,0 +1,1 @@
+-- Historical version marker. Current Tetris score schema and policies are included in the baseline migration snapshot.
