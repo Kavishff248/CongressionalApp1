@@ -10,7 +10,7 @@ CivicSignal is a civic information tool that connects local public data with ver
 
 * Explore local public data
 * Find community issues
-* Report problemss
+* Submit and review community reports
 * Review and verify reports
 * Follow documented civic actions
 
@@ -39,10 +39,15 @@ CivicSignal is a civic information tool that connects local public data with ver
 CivicSignal uses public information from sources such as:
 
 * U.S. Census Bureau
-* FEMA
-* National Weather Service
+* FEMA disaster declarations (may include historical records)
+* National Weather Service active alerts, including hurricane and tropical-storm warnings
+* Wildfire incident locations from NIFC/WFIGS
 * South Carolina Department of Transportation
 * Other official government sources
+
+## Map layers
+
+The Community Map has separate on/off controls for verified community reports, active weather and hurricane alerts, wildfires, FEMA disaster declarations, and road closures. Weather alerts are active alerts, while FEMA declarations may be historical; neither layer should be treated as a substitute for emergency instructions. Each map feature identifies its data source when available.
 
 ## Note
 
