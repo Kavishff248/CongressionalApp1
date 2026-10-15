@@ -299,14 +299,14 @@ async function renderMap(){
     reports:L.layerGroup().addTo(map),
     weather:L.layerGroup().addTo(map),
     fires:L.layerGroup().addTo(map),
-    disasters:L.layerGroup().addTo(map),
+    disasters:L.layerGroup(),
     roads:L.layerGroup().addTo(map)
   };
   L.control.layers(null,{
     "Verified community reports":layers.reports,
     "Hurricanes & severe weather":layers.weather,
     "Wildfires":layers.fires,
-    "FEMA disaster declarations":layers.disasters,
+    "FEMA declarations (may be historical)":layers.disasters,
     "Road closures":layers.roads
   },{collapsed:false,position:"topright"}).addTo(map);
   A.reports.forEach(function(r){
@@ -390,7 +390,7 @@ async function loadLiveFires(map,target){
   const countEl=document.querySelector("#live-count");
   try{
     const base="https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Incident_Locations_Current/FeatureServer/0/query";
-    const params=new URLSearchParams({where:"IncidentTypeCategory='WF' AND IncidentSize >= 100",outFields:"IncidentName,IncidentSize,POOState,POOCounty,PercentContained,FireDiscoveryDateTime,IncidentShortDescription",returnGeometry:"true",outSR:"4326",f:"geojson",resultRecordCount:"100"});
+    const params=new URLSearchParams({where:"IncidentTypeCategory='WF' AND IncidentSize >= 100 AND POOState='SC'",outFields:"IncidentName,IncidentSize,POOState,POOCounty,PercentContained,FireDiscoveryDateTime,IncidentShortDescription",returnGeometry:"true",outSR:"4326",f:"geojson",resultRecordCount:"100"});
     const j=await api(base+"?"+params.toString()),features=j.features||[];
     if(countEl)countEl.textContent=features.length+" active wildfires";
     features.forEach(function(f){
