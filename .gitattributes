@@ -1,0 +1,2 @@
+# Keep Supabase SQL migrations in the repository without listing PLpgSQL in GitHub's language breakdown.
+*.sql linguist-detectable=false
