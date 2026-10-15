@@ -56,15 +56,3 @@ CivicSignal is an educational civic-information project. It does not represent a
 ## Project
 
 Built for the **Congressional App Challenge**.
-
-## Recent UI polish
-
-Small visual-only refinements keep CivicSignal's existing layout and features intact:
-
-- Added clearer keyboard-focus indicators for navigation, links, buttons, form fields, and expandable sections.
-- Smoothed hover and pressed states for cards and controls without changing their actions.
-- Improved dark-theme consistency for supporting panels and controls.
-- Added small-screen spacing and text-wrap refinements.
-- Respected reduced-motion preferences.
-
-These changes are presentation-only; they do not alter data sources, report workflows, authentication, or database behavior.
